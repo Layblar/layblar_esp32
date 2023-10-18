@@ -13,4 +13,4 @@ The hardware is based on a ESP32-C3 Chip and a M-Bus Transreceiver (TSS721A or N
 
 - Selected hardware parts for prototyp
 - Sended BoM for ordering
-- [Shopping List](https://layblar.github.io/layblar_esp32/img/order_05102023.png){:target="_blank"}
+- <a href="https://layblar.github.io/layblar_esp32/img/order_05102023.png" target="_blank">Shopping List</a>
