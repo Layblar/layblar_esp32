@@ -64,6 +64,12 @@ The code uses `#include "mbedtls/gcm.h"` for decrypting.
 
 # Changelog
 
+## 2023-11-26 ([André Maurer](https://github.com/bouncecom))
+
+- Created first version of PCB used KiCad.
+- Created new repository for PCB.
+- Created doc files for PCB.
+
 ## 2023-11-24 ([André Maurer](https://github.com/bouncecom))
 
 - Reverse engineered data frame format as there is no good documentation from vkw (other provider has some documentation as orientation)

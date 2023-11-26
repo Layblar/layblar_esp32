@@ -29,6 +29,7 @@
 
 #include "esp_log.h"
 #include "mqtt_client.h"
+#include "mbedtls/gcm.h"
 
 static const char *TAG = "MQTT_EXAMPLE";
 
