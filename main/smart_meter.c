@@ -113,21 +113,11 @@ static void smart_meter_task(void *arg)
                 size_t len_frame1 = data[1];
                 size_t len_frame2 = data[SIZE_MBUS_START + len_frame1 + SIZE_MBUS_STOP + 1];
                 if(len_frame1 == LEN_FRAME_1 && len_frame2 == LEN_FRAME_2){
-                    // for(int i = 0; i < (SIZE_MBUS_START + LEN_FRAME_1 + SIZE_MBUS_STOP + SIZE_MBUS_START + LEN_FRAME_2 + SIZE_MBUS_STOP); i++){
-                    //     printf("%02hhX", data[i]);
-                    // }
-                    // printf("\n");
                     ESP_LOGI(TAG_SMART_METER, "CORRECT FRAME LENGTHS DETECTED !!!");
-                    // printf("len dlsm frame 1: %d\n", LEN_DLSM_FRAME_1);
-                    // printf("len dlsm frame 2: %d\n", LEN_DLSM_FRAME_2);
 
                     // ***** GET encry *****
                     memcpy((char *) encry,(char *) (data + OFFSET_DATA_1), LEN_DLSM_FRAME_1);
                     memcpy((char *) (encry + LEN_DLSM_FRAME_1),(char *) (data + OFFSET_DATA_2), LEN_DLSM_FRAME_2);
-                    // for(int i = 0; i < LEN_ENCRY; i++){
-                    //     printf("%02hhX", encry[i]);
-                    // }
-                    // printf("\n");
 
                     // ***** GET iv *****
                     size_t apdu_len_len = 1;
@@ -139,10 +129,6 @@ static void smart_meter_task(void *arg)
                     }
                     memcpy((char *) iv,(char *) (data + SIZE_MBUS_START + SIZE_METADATA + SIZE_SERVICE + SIZE_TITLE_LEN), SIZE_TITLE);
                     memcpy((char *) (iv + SIZE_TITLE),(char *) (data + SIZE_MBUS_START + SIZE_METADATA + SIZE_SERVICE + SIZE_TITLE_LEN + SIZE_TITLE + apdu_len_len + 1), SIZE_FRAME_CNT);
-                    // for(int i = 0; i < LEN_IV; i++){
-                    //     printf("%02hhX", iv[i]);
-                    // }
-                    // printf("\n");
 
                     uint8_t key[16] = {0x32, 0x69, 0x31, 0x63, 0x79, 0x79, 0x45, 0x6C, 0x59, 0x37, 0x34, 0x44, 0x73, 0x6D, 0x33, 0x75};
 
@@ -160,35 +146,15 @@ static void smart_meter_task(void *arg)
                     mbedtls_gcm_starts(&aes, MBEDTLS_GCM_DECRYPT, (const unsigned char*)iv, LEN_IV);
                     size_t decry_len = 0;
                     int ret = mbedtls_gcm_update(&aes, (unsigned char*)encry, LEN_ENCRY, (unsigned char*)decry, 512, &decry_len);
-                    // mbedtls_gcm_finish(&aes, (unsigned char*) auth_tag, 4, (unsigned char*)rest, 15, &rest_len);
                     ESP_LOGI(TAG_SMART_METER, "ret: %d", ret);
                     mbedtls_gcm_free( &aes );
-                    // for(int i = 0; i < decry_len; i++){
-                    //     printf("%02hhX", decry[i]);
-                    // }
-                    // printf("\n");
                     ESP_LOGI(TAG_SMART_METER, "decry_len: %d", decry_len);
 
-                    // Search 
+                    // use structure for better value handling
                     struct dlms_frame* frame1 = decry;
-                    // for(int i = 0; i < sizeof(frame1->pos_42_0); i++){
-                    //     printf("%02hhX", frame1->pos_42_0[i]);
-                    // }
-                    // printf("\n");
-                    // for(int i = 0; i < sizeof(frame1->pos_32_7.value); i++){
-                    //     printf("%02hhX\n", frame1->pos_32_7.value[i]);
-                    // }
-                    // for(int i = 0; i < sizeof(frame1->pos_31_7.value); i++){
-                    //     printf("%02hhX\n", frame1->pos_31_7.value[i]);
-                    // }
-                    // printf("pos_32_7: %d\n", get_uint16(frame1->pos_32_7.value));
-                    // printf("pos_52_7: %d\n", get_uint16(frame1->pos_52_7.value));
-                    // printf("pos_72_7: %d\n", get_uint16(frame1->pos_72_7.value));
-                    // printf("pos_31_7: %d\n", get_uint16(frame1->pos_31_7.value));
 
-                    // copy serial number
+                    // get serial number (only once)
                     if(serial_number == NULL){
-                        // char serial[20];
                         char* serial = malloc(sizeof(char[20]));
                         uint8_t* array_ser = frame1->value_96_1;
                         sprintf(serial, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c", array_ser[0], array_ser[1], array_ser[2], array_ser[3], array_ser[4], array_ser[5], array_ser[6], array_ser[7], array_ser[8], array_ser[9], array_ser[10], array_ser[11], array_ser[12], array_ser[13]);
@@ -227,7 +193,7 @@ static void smart_meter_task(void *arg)
                         ESP_LOGI(TAG_SMART_METER, "Sent to queue successfully");
                     }
                     flag_new_json = true;
-                    // printf("%s\n", json_str); 
+                    
                     // free the JSON string and cJSON object 
                     cJSON_Delete(json); 
 

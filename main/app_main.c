@@ -67,12 +67,10 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     switch ((esp_mqtt_event_id_t)event_id) {
     case MQTT_EVENT_CONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-        // msg_id = esp_mqtt_client_publish(client, "/topic/blabla", smart_meter_get_json(), 0, 0, 0);
         while (1){
                 if( xQueueReceive( xQueue1,
                             &( pString ),
                             ( TickType_t ) 10 ) == pdPASS ){
-            /* *pxRxedPointer now points to xMessage. */
             printf("STRING: %s\n", pString);
             msg_id = esp_mqtt_client_publish(client, serial_number, pString, 0, 0, 0);
             ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
@@ -131,11 +129,6 @@ static void mqtt_app_start(void)
     esp_mqtt_client_start(client);
 }
 
-// static void wifi_task(void *arg)
-// {
-//     ESP_ERROR_CHECK(example_connect());
-// }
-
 void app_main(void)
 {
     ESP_LOGI(TAG, "[APP] Startup..");
@@ -159,23 +152,8 @@ void app_main(void)
      * examples/protocols/README.md for more information about this function.
      */
     ESP_ERROR_CHECK(example_connect());
-    //xTaskCreate(wifi_task, "wifi_task", ECHO_TASK_STACK_SIZE/2, NULL, 20, NULL);
-    
 
     smart_meter_init();
-    // printf("STRING: %s\n", smart_meter_get_json());
-
-    // char* pString;
-    // while(1){
-    //     vTaskDelay(500 / portTICK_PERIOD_MS);
-
-    //     if( xQueueReceive( xQueue1,
-    //                      &( pString ),
-    //                      ( TickType_t ) 10 ) == pdPASS ){
-    //      /* *pxRxedPointer now points to xMessage. */
-    //      printf("STRING: %s\n", pString);
-    //      }
-    // }
 
     mqtt_app_start();
 }
