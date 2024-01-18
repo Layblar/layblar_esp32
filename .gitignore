@@ -106,3 +106,7 @@ size_info.txt
 
 # clang config (for LSP)
 .clangd
+
+.devcontainer
+sdkconfig
+.old
