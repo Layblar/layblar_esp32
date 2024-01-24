@@ -17,12 +17,25 @@
 #include "esp_event.h"
 #include "esp_netif.h"
 #include "protocol_examples_common.h"
+#include "driver/gpio.h"
+#include <esp_http_server.h>
 
 #include "esp_log.h"
 #include "mqtt_client.h"
 #include "esp_tls.h"
 #include "esp_ota_ops.h"
 #include <sys/param.h>
+#include "wifi_soft_ap.h"
+#include "http_server.h"
+
+#define GPIO_BUTTON 9
+#define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_BUTTON)
+#define GPIO_LED_YELLOW 6
+#define GPIO_LED_BLUE 7
+#define GPIO_OUTPUT_PIN_SEL ((1ULL<<GPIO_LED_YELLOW) | (1ULL<<GPIO_LED_BLUE))
+
+#define LED_OFF 1
+#define LED_ON 0
 
 #define ECHO_TEST_TXD (CONFIG_EXAMPLE_UART_TXD)
 #define ECHO_TEST_RXD (CONFIG_EXAMPLE_UART_RXD)
@@ -129,6 +142,34 @@ static void mqtt_app_start(void)
     esp_mqtt_client_start(client);
 }
 
+static void init_gpio(void){
+    //zero-initialize the config structure.
+    gpio_config_t io_conf = {};
+    //disable interrupt
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    //set as output mode
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    //bit mask of the pins that you want to set,e.g.GPIO18/19
+    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
+    //disable pull-down mode
+    io_conf.pull_down_en = 0;
+    //enable pull-up mode
+    io_conf.pull_up_en = 1;
+    //configure GPIO with the given settings
+    gpio_config(&io_conf);
+
+    //bit mask of the pins, use GPIO9 here
+    io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
+    //set as input mode
+    io_conf.mode = GPIO_MODE_INPUT;
+    //enable pull-down mode
+    io_conf.pull_down_en = 1;
+    gpio_config(&io_conf);
+
+    gpio_set_level(GPIO_LED_BLUE, LED_OFF);
+    gpio_set_level(GPIO_LED_YELLOW, LED_OFF);
+}
+
 void app_main(void)
 {
     ESP_LOGI(TAG, "[APP] Startup..");
@@ -146,6 +187,15 @@ void app_main(void)
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    init_gpio();
+
+    /* Start Init Mode in case of pressed USER Button while booting */
+    if(gpio_get_level(GPIO_BUTTON)){
+        wifi_init_softap();
+        start_webserver();
+        return;
+    }
 
     /* This helper function configures Wi-Fi or Ethernet, as selected in menuconfig.
      * Read "Establishing Wi-Fi or Ethernet Connection" section in

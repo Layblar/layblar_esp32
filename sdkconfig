@@ -420,6 +420,15 @@ CONFIG_EXAMPLE_TASK_STACK_SIZE=4096
 # end of UART for Smart Meter Configuration
 
 #
+# WIFI softAP Configuration
+#
+CONFIG_ESP_AP_WIFI_SSID="Layblar Setup AP"
+CONFIG_ESP_AP_WIFI_PASSWORD="Layblar Setup AP"
+CONFIG_ESP_AP_WIFI_CHANNEL=1
+CONFIG_ESP_MAX_STA_CONN=4
+# end of WIFI softAP Configuration
+
+#
 # Example Connection Configuration
 #
 CONFIG_EXAMPLE_CONNECT_WIFI=y
