@@ -27,6 +27,7 @@ static const char *TAG = "http_server";
 // HTTP request handler for the root URL "/"
 
 esp_err_t root_handler(httpd_req_t *req) {
+    // TODO: Add fourth text field for MQTT(S) broker
     const char *html_response = "<html><body>"
                                 "<h1>ESP32 Webserver for Layblar Setup</h1>"
                                 "<form action='/submit' method='post'>"
@@ -63,6 +64,7 @@ esp_err_t submit_handler(httpd_req_t *req) {
         remaining -= ret;
     }
 
+    // TODO: Unparse the received content (smart meter key & wifi ssid/pw) and implement them
     printf("Received: %s\n", content);
 
     // Respond to the client

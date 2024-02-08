@@ -130,6 +130,7 @@ static void smart_meter_task(void *arg)
                     memcpy((char *) iv,(char *) (data + SIZE_MBUS_START + SIZE_METADATA + SIZE_SERVICE + SIZE_TITLE_LEN), SIZE_TITLE);
                     memcpy((char *) (iv + SIZE_TITLE),(char *) (data + SIZE_MBUS_START + SIZE_METADATA + SIZE_SERVICE + SIZE_TITLE_LEN + SIZE_TITLE + apdu_len_len + 1), SIZE_FRAME_CNT);
 
+                    // TODO: Remove hard coded smart meter key and set key by Webserver
                     uint8_t key[16] = {0x32, 0x69, 0x31, 0x63, 0x79, 0x79, 0x45, 0x6C, 0x59, 0x37, 0x34, 0x44, 0x73, 0x6D, 0x33, 0x75};
 
                     ESP_LOGI(TAG_SMART_METER, "len encry: %d", LEN_ENCRY);
@@ -224,6 +225,7 @@ void smart_meter_init(){
     ESP_ERROR_CHECK(uart_param_config(ECHO_UART_PORT_NUM, &uart_config));
     ESP_ERROR_CHECK(uart_set_pin(ECHO_UART_PORT_NUM, ECHO_TEST_TXD, ECHO_TEST_RXD, ECHO_TEST_RTS, ECHO_TEST_CTS));
 
+    // TODO: Increase length of Queue size depending on free space for greater buffer
     xQueue1 = xQueueCreate( 5, sizeof(char*) );
     if( xQueue1 != NULL ){
         ESP_LOGI(TAG_SMART_METER, "Queue created");
