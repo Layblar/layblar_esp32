@@ -84,6 +84,30 @@ The C file `wifi_soft_ap.c` contains the implementation of an HTTP server. The s
 
 cJSON is an ultralightweight JSON parser in ANSI C.
 
+# JSON format
+
+The values are sent every 5 seconds via MQTT(S) in JSON format.
+
+```json
+{
+        "1.7.0":        0,
+        "1.8.0":        22,
+        "2.7.0":        0,
+        "2.8.0":        0,
+        "3.8.0":        7,
+        "4.8.0":        0,
+        "32.7.0":       228.8,
+        "52.7.0":       228.9,
+        "72.7.0":       228.4,
+        "31.7.0":       0,
+        "51.7.0":       0,
+        "71.7.0":       0,
+        "timestamp":    "yyyy-MM-ddTHH:mm:ss"
+}
+```
+
+Note that the timestamp always has this format, e.g. `"timestamp":  "2024-01-11T10:46:05"`.
+
 # Layblar PCB
 
 ![PCB_Layblar](img/PCB_Layblar.jpg)
@@ -120,6 +144,10 @@ The assembled PCB encountered issues, as the microcontroller could not receive c
 ## Contributors
 
 - [André Maurer](https://github.com/bouncecom)
+
+## 2024-02-28
+
+- Added docs
 
 ## 2024-01-24
 
